@@ -23,17 +23,19 @@ const server = http.createServer((req, res) => {
         });
 
         // Parse incoming data with chunks and buffer.
-        req.on('end', () => {
+       return req.on('end', () => {
             const parsedBody = Buffer.concat(reqChunks).toString();
             console.log(parsedBody);
             // name = value
             const message = parsedBody.split('=')[1];
-            fs.writeFileSync('message.txt', message);
+            fs.writeFile('message.txt', message, (err) => {
+                res.statusCode = 302;
+                // Redirect user
+                res.setHeader('Location', '/');
+                return res.end();
+            });
         });
-        res.statusCode = 302;
-        // Redirect user
-        res.setHeader('Location', '/');
-        return res.end();
+       
     }
 
     res.setHeader('Content-Type', 'text/html');
